@@ -1,0 +1,9 @@
+".\Obj\main.obj",
+".\Obj\key.obj",
+".\Obj\beep.obj",
+".\Obj\time.obj",
+".\Obj\lcd1602.obj",
+".\Obj\time1.obj",
+".\Obj\public.obj" 
+TO ".\Obj\template" 
+PRINT(".\Obj\template.m51") RAMSIZE(256) 

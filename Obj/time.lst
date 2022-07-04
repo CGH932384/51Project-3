@@ -1,0 +1,95 @@
+C51 COMPILER V9.54   TIME                                                                  06/24/2022 15:36:09 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE TIME
+OBJECT MODULE PLACED IN .\Obj\time.obj
+COMPILER INVOKED BY: H:\keil51\C51\BIN\C51.EXE App\time\time.c OPTIMIZE(8,SPEED) BROWSE INCDIR(.\App\24c02;.\App\iic;.\A
+                    -pp\key;.\App\smg;.\Public;.\App\ds18b20;.\App\beep;.\App\time;.\App\lcd1602) DEBUG OBJECTEXTEND PRINT(.\Obj\time.lst) TA
+                    -BS(2) OBJECT(.\Obj\time.obj)
+
+line level    source
+
+   1          #include "time.h"
+   2          
+   3          //变量定义
+   4          u8 gmsec=0;//ms级定义
+   5          u8 gsec=0;//秒定义
+   6          u8 gmin=0;//分定义
+   7          u8 gshi=0;
+   8          
+   9          /*******************************************************************************
+  10          * 函 数 名       : time0_init
+  11          * 函数功能     : 定时器0中断配置函数，通过设置TH和TL即可确定定时时间
+  12          * 输    入       : 无
+  13          * 输    出       : 无
+  14          *******************************************************************************/
+  15          void time0_init(void)
+  16          {
+  17   1        TMOD|=0X01;//选择为定时器0模式，工作方式1
+  18   1        TH0=0XDC; //给定时器赋初值，定时10ms
+  19   1        TL0=0X00; 
+  20   1        ET0=1;//打开定时器0中断允许
+  21   1        EA=1;//打开总中断
+  22   1        TR0=0;//关闭定时器    
+  23   1      }
+  24          
+  25          /*******************************************************************************
+  26          * 函 数 名       : time0_start
+  27          * 函数功能     : 定时器0打开
+  28          * 输    入       : 无
+  29          * 输    出       : 无
+  30          *******************************************************************************/
+  31          void time0_start(void)
+  32          {
+  33   1        TR0=1;//打开定时器  
+  34   1      }
+  35          
+  36          /*******************************************************************************
+  37          * 函 数 名       : time0_stop
+  38          * 函数功能     : 定时器0关闭
+  39          * 输    入       : 无
+  40          * 输    出       : 无
+  41          *******************************************************************************/
+  42          void time0_stop(void)
+  43          {
+  44   1        TR0=0;//关闭定时器
+  45   1        TH0=0X00;
+  46   1        TL0=0X00; 
+  47   1      }
+  48          
+  49          void time0() interrupt 1 //定时器0中断函数
+  50          {
+  51   1        TH0=0XDC; //给定时器赋初值，定时10ms
+  52   1        TL0=0X00;
+  53   1        gmsec++;//10ms加1次
+C51 COMPILER V9.54   TIME                                                                  06/24/2022 15:36:09 PAGE 2   
+
+  54   1        if(gmsec==100)//定时1秒
+  55   1        { 
+  56   2          gmsec=0;
+  57   2          gsec++;//对秒计数
+  58   2          if(gsec==60)//到达60秒，即1分钟
+  59   2          {
+  60   3            gsec=0;
+  61   3            gmin++;//对分计数
+  62   3            if(gmin==60)
+  63   3              {gmin=0;
+  64   4               gshi++;
+  65   4               if(gshi==24) gshi =0;     }
+  66   3          } 
+  67   2        }         
+  68   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     82    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      4    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
